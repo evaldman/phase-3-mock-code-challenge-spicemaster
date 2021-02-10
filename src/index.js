@@ -33,12 +33,24 @@ function fetchSpiceIngredients(ingredient){
     fetch(spiceurl)
     .then(response => response.json())
     // .then(data => console.log(data))
-    .then(ingData => ingData.forEach(spice => displayFirstSpices(spice)))
+    .then(ingData => ingData.forEach(spice => displaySpiceIng(spice)))
 }
+const ingredientsContainer = document.querySelector('.ingredients-container')
+
+function displaySpiceIng(spice){
+    // console.log(spice)
+    const ingredientBlend = document.createElement('li')
+    ingredientBlend.dataset.id = spice.id
+    ingredientBlend.textContent = spice.name
+    ingredientBlend.textContent = spice.spiceblendId
+
+   
+}
+
 
 const spiceDetail = document.querySelector('#spice-blend-detail')
 
-function displayFirstSpice(spiceOne, spice){
+function displayFirstSpice(spiceOne){
     // console.log(spiceOne)
     // const ingredient = spice. 
     spiceDetail.dataset.id = spiceOne.id
@@ -55,6 +67,27 @@ function displayFirstSpice(spiceOne, spice){
 
 }
 
+const updateForm = document.querySelector('#update-form')
 
+updateForm.addEventListener('submit', updateBlend)
+
+function updateBlend(event){
+    event.preventDefault()
+    // console.log(event)
+    const spiceId = event.target.dataset.id
+    const title = event.target.title.value
+    const newTitle = {title}
+    updatedImage(newTitle, spiceId)
+}
+
+function updatedImage(newTitle, spiceId){
+    fetch(`${url}/1`, {
+        method: "PATCH",
+        headers: {"Content-Type": 'application/json'},
+        body: JSON.stringify(newTitle)
+})
+}
+
+fetchSpiceIngredients()
 fetchFirstSpice()
 fetchAllSpices()
