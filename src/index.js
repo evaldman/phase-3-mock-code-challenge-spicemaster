@@ -1,15 +1,13 @@
 const url = 'http://localhost:3000/spiceblends'
-const spiceurl = 'http://localhost:3000/ingredients'
-const imageDetail = document.querySelector('#spice-images')
-
 
 function fetchAllSpices(){
     fetch(url)
     .then(response => response.json())
     // .then(spiceData => console.log(spiceData))
     .then(spiceData => spiceData.forEach(oneSpice => displayAllSpices(oneSpice)))
-
 }
+
+const imageDetail = document.querySelector('#spice-images')
 
 function displayAllSpices(oneSpice){
     // console.log(oneSpice)
@@ -18,57 +16,40 @@ function displayAllSpices(oneSpice){
     spiceImage.dataset.id = oneSpice.id
     spiceImage.setAttribute("src", oneSpice.image)
 
-    imageDetail.append(spiceImage)
-    
+    imageDetail.append(spiceImage)  
 }
 
-function fetchFirstSpice(spice){
+function fetchFirstSpice(){
     fetch(`${url}/1`)
     .then(response => response.json())
     // .then(data => console.log(data))
     .then(spiceOne => displayFirstSpice(spiceOne))
 }
 
-function fetchSpiceIngredients(ingredient){
-    fetch(spiceurl)
-    .then(response => response.json())
-    // .then(data => console.log(data))
-    .then(ingData => ingData.forEach(spice => displaySpiceIng(spice)))
-}
-const ingredientsContainer = document.querySelector('.ingredients-container')
-
-function displaySpiceIng(spice){
-    // console.log(spice)
-    const ingredientBlend = document.createElement('li')
-    ingredientBlend.dataset.id = spice.id
-    ingredientBlend.textContent = spice.name
-    ingredientBlend.textContent = spice.spiceblendId
-
-   
-}
-
-
-const spiceDetail = document.querySelector('#spice-blend-detail')
+const spiceDetail = document.querySelector('.detail-image')
+// console.log(spiceDetail)
+const title = document.querySelector('.title')
 
 function displayFirstSpice(spiceOne){
     // console.log(spiceOne)
-    // const ingredient = spice. 
-    spiceDetail.dataset.id = spiceOne.id
-    spiceDetail.innerHTML = `
-    <img class="detail-image" src=${spiceOne.image} alt=${spiceOne.title} />
-    <h2 class="title">${spiceOne.title}</h2>
-    <div class="ingredients-container">
-    <h4>Ingredients:</h4>
-    <ul class="ingredients-list">
-     
-    </ul>
+    spiceDetail.src = spiceOne.image
+    spiceDetail.alt = spiceOne.title
+    title.innerText = spiceOne.title
+    updateForm.dataset.id = spiceOne.id
+    spiceOne.ingredients.forEach(ingredient => ingredientsList(ingredient)) 
+}
 
-    `
+const ingredientul = document.querySelector('.ingredients-list')
 
+function ingredientsList(ingredient){
+    // console.log(ingredient)
+    const ingredientLi = document.createElement('li')
+    ingredientLi.dataset.id = ingredient.id
+    ingredientLi.innerText = ingredient.name
+    ingredientul.append(ingredientLi)
 }
 
 const updateForm = document.querySelector('#update-form')
-
 updateForm.addEventListener('submit', updateBlend)
 
 function updateBlend(event){
@@ -80,14 +61,33 @@ function updateBlend(event){
     updatedImage(newTitle, spiceId)
 }
 
-function updatedImage(newTitle, spiceId){
-    fetch(`${url}/1`, {
+function updatedImage(newTitle, id){
+    fetch(`${url}/${id}`, {
         method: "PATCH",
         headers: {"Content-Type": 'application/json'},
         body: JSON.stringify(newTitle)
+        
 })
+        .then(response => response.json())
+        // .then(displayFirstSpice)
 }
 
-fetchSpiceIngredients()
-fetchFirstSpice()
+const newIngredientForm = document.querySelector("#ingredient-form")
+newIngredientForm.addEventListener('submit', newIngredient)
+
+function newIngredient(event){
+    event.preventDefault()
+    // console.log(event)
+    const name = event.target.name.value
+    const ingredientId = event.target.dataset.id
+
+    newIngredient = {ingredientId, name}
+    ingredientsList(newIngredient)
+
+
+}
+
 fetchAllSpices()
+fetchFirstSpice()
+// fetchSpiceIngredients()
+
